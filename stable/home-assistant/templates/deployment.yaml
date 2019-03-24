@@ -93,6 +93,10 @@ spec:
           - mountPath: {{ .Values.git.keyPath }}
             name: git-secret
           {{- end }}
+          {{- range .Values.devices }}
+          - name: "device-{{ . }}"
+            mountPath: "/dev/{{ . }}"
+          {{- end }}
           {{- if .Values.usePodSecurityContext }}
           securityContext:
             runAsUser: {{ default 0 .Values.runAsUser }}
@@ -230,6 +234,12 @@ spec:
           defaultMode: 256
           secretName: {{ .Values.git.secret }}
       {{ end }}
+      {{- range .Values.devices }}
+      - name: "device-{{ . }}"
+        hostPath:
+          path: "/dev/{{ . }}"
+          type: CharDevice
+      {{- end }}
     {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

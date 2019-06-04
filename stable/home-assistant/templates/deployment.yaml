@@ -97,6 +97,10 @@ spec:
           - name: "device-{{ . }}"
             mountPath: "/dev/{{ . }}"
           {{- end }}
+          {{- if .Values.dbus }}
+          - name: dbus
+            mountPath: /run/dbus/system_bus_socket
+          {{- end }}
           {{- if .Values.usePodSecurityContext }}
           securityContext:
             runAsUser: {{ default 0 .Values.runAsUser }}
@@ -240,6 +244,12 @@ spec:
         hostPath:
           path: "/dev/{{ . }}"
           type: CharDevice
+      {{- end }}
+      {{- if .Values.dbus }}
+      - name: dbus
+        hostPath:
+          path: {{ .Values.dbus }}
+          type: Socket
       {{- end }}
     {{- with .Values.nodeSelector }}
       nodeSelector:
